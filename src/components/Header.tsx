@@ -24,7 +24,7 @@ export default function Header({ cycleHours = 0 }: HeaderProps) {
                         <div className="hidden md:flex items-center space-x-2 bg-slate-800 px-4 py-2 rounded-lg">
                             <Clock className="w-4 h-4 text-blue-400" />
                             <span className="text-sm text-slate-300">
-                                70hr Cycle: {cycleHours}/70
+                                70hr Cycle: {cycleHours.toFixed(2)}/70
                             </span>
                         </div>
                     </div>

@@ -40,7 +40,7 @@ export default function TripSummaryCards({ tripData }: TripSummaryCardsProps) {
                 <TrendingUp className="w-8 h-8 mb-2 opacity-80" />
                 <p className="text-sm opacity-90 mb-1">Cycle Remaining</p>
                 <p className="text-3xl font-bold">
-                    {tripData.hos_summary.remaining_70hr_cycle}
+                    {tripData.hos_summary.remaining_70hr_cycle.toFixed(1)}
                 </p>
                 <p className="text-sm opacity-80">hours</p>
             </div>

@@ -1,8 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MapPin, Clock, TrendingUp, Car } from 'lucide-react';
+import { MapPin, Clock, TrendingUp, Car, Locate } from 'lucide-react';
 import { TripFormData } from '@/types';
+import LocationAutocomplete, { Place } from './LocationAutocomplete';
 
 export default function TripForm() {
     const router = useRouter();
@@ -12,22 +13,56 @@ export default function TripForm() {
         dropoffLocation: 'Atlanta, GA',
         currentCycleHours: 45
     });
-
+    const [loadingLocation, setLoadingCurrentLocation] = useState(false);
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         // Store form data in sessionStorage for now (later: API call)
         sessionStorage.setItem('tripFormData', JSON.stringify(formData));
 
-        router.push('/route');
+        router.push('/trip');
     };
 
-    const handleInputChange = (field: keyof TripFormData, value: string | number) => {
+    const handleInputChange = (field: keyof TripFormData, value: Place) => {
         setFormData(prev => ({
             ...prev,
-            [field]: value
+            [field]: value.coordinates
         }));
     };
+
+    const detectLocation = async () => {
+        if (!navigator.geolocation) {
+            alert('Geolocation not supported by your browser.');
+            return;
+        }
+
+        setLoadingCurrentLocation(true);
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                const { latitude, longitude } = pos.coords;
+
+                try {
+                    const res = await fetch(
+                        `https://api.openrouteservice.org/geocode/reverse?&point.lat=${latitude}&point.lon=${longitude}`
+                    );
+                    const data = await res.json();
+                    const label = data.features?.[0]?.properties?.label;
+
+                    if (label) handleInputChange('currentLocation', label);
+                } catch (err) {
+                    console.error('Reverse geocoding failed', err);
+                } finally {
+                    setLoadingCurrentLocation(false);
+                }
+            },
+            (err) => {
+                console.warn(err);
+                setLoadingCurrentLocation(false);
+            },
+            { enableHighAccuracy: true }
+        );
+    };
+
 
     return (
         <div className="max-w-2xl mx-auto">
@@ -44,14 +79,23 @@ export default function TripForm() {
                             <MapPin className="w-4 h-4 inline mr-2 text-green-400" />
                             Current Location
                         </label>
-                        <input
-                            type="text"
-                            value={formData.currentLocation}
-                            onChange={(e) => handleInputChange('currentLocation', e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                            placeholder="Dallas, TX"
-                            required
-                        />
+                        <div className="flex gap-2">
+                            <div className="flex-1 relative">
+                                <LocationAutocomplete
+                                    onSelect={(place) => handleInputChange('currentLocation', place)}
+                                />
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={detectLocation}
+                                disabled={loadingLocation}
+                                className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white flex items-center gap-1 transition disabled:opacity-50"
+                            >
+                                <Locate className="w-4 h-4" />
+                                {loadingLocation ? 'Locating...' : 'Use GPS'}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Pickup Location */}
@@ -60,13 +104,8 @@ export default function TripForm() {
                             <MapPin className="w-4 h-4 inline mr-2 text-blue-400" />
                             Pickup Location
                         </label>
-                        <input
-                            type="text"
-                            value={formData.pickupLocation}
-                            onChange={(e) => handleInputChange('pickupLocation', e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                            placeholder="Houston, TX"
-                            required
+                        <LocationAutocomplete
+                            onSelect={(place) => handleInputChange('pickupLocation', place)}
                         />
                     </div>
 
@@ -76,13 +115,8 @@ export default function TripForm() {
                             <MapPin className="w-4 h-4 inline mr-2 text-red-400" />
                             Dropoff Location
                         </label>
-                        <input
-                            type="text"
-                            value={formData.dropoffLocation}
-                            onChange={(e) => handleInputChange('dropoffLocation', e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                            placeholder="Atlanta, GA"
-                            required
+                        <LocationAutocomplete
+                            onSelect={(place) => handleInputChange('dropoffLocation', place)}
                         />
                     </div>
 

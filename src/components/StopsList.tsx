@@ -1,12 +1,13 @@
 import React from 'react';
 import { MapPin, Fuel, Coffee, Moon } from 'lucide-react';
+import { Stop } from '@/types';
 
 interface StopCardProps {
     icon: React.ReactNode;
     title: string;
-    location: string;
-    time: string;
-    duration?: string;
+    location: { lat: number; lng: number };
+    time?: string;
+    duration?: number;
 }
 
 function StopCard({ icon, title, location, time, duration }: StopCardProps) {
@@ -15,7 +16,9 @@ function StopCard({ icon, title, location, time, duration }: StopCardProps) {
             <div className="flex-shrink-0">{icon}</div>
             <div className="flex-1">
                 <p className="font-semibold text-white">{title}</p>
-                <p className="text-sm text-slate-400">{location}</p>
+                <p className="text-sm text-slate-400">
+                    {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                </p>
             </div>
             <div className="text-right">
                 <p className="text-sm font-medium text-slate-300">{time}</p>
@@ -25,52 +28,40 @@ function StopCard({ icon, title, location, time, duration }: StopCardProps) {
     );
 }
 
-export default function StopsList() {
+function getIcon(type: string) {
+    switch (type) {
+        case 'current':
+            return <MapPin className="w-5 h-5 text-green-400" />;
+        case 'pickup':
+            return <MapPin className="w-5 h-5 text-blue-400" />;
+        case 'dropoff':
+            return <MapPin className="w-5 h-5 text-red-400" />;
+        case 'coffee':
+            return <Coffee className="w-5 h-5 text-cyan-400" />;
+        case 'fuel':
+            return <Fuel className="w-5 h-5 text-orange-400" />;
+        case 'rest':
+            return <Moon className="w-5 h-5 text-purple-400" />;
+        default:
+            return <MapPin className="w-5 h-5 text-slate-400" />;
+    }
+}
+
+
+export default function StopsList({ stops = [] }: { stops?: Stop[] }) {
     return (
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700 p-6">
             <h3 className="text-xl font-bold text-white mb-4">Trip Stops</h3>
             <div className="space-y-3">
-                <StopCard
-                    icon={<MapPin className="w-5 h-5 text-green-400" />}
-                    title="Current Location"
-                    location="Dallas, TX"
-                    time="06:00"
-                />
-                <StopCard
-                    icon={<MapPin className="w-5 h-5 text-blue-400" />}
-                    title="Pickup"
-                    location="Houston, TX"
-                    time="10:30"
-                    duration="1 hour"
-                />
-                <StopCard
-                    icon={<Coffee className="w-5 h-5 text-cyan-400" />}
-                    title="30-Min Break"
-                    location="Baton Rouge, LA"
-                    time="14:00"
-                    duration="30 min"
-                />
-                <StopCard
-                    icon={<Fuel className="w-5 h-5 text-orange-400" />}
-                    title="Fuel Stop"
-                    location="Baton Rouge, LA"
-                    time="14:00"
-                    duration="30 min"
-                />
-                <StopCard
-                    icon={<Moon className="w-5 h-5 text-purple-400" />}
-                    title="10-Hour Rest"
-                    location="Tuscaloosa, AL"
-                    time="20:00"
-                    duration="10 hours"
-                />
-                <StopCard
-                    icon={<MapPin className="w-5 h-5 text-red-400" />}
-                    title="Dropoff"
-                    location="Atlanta, GA"
-                    time="10:30"
-                    duration="1 hour"
-                />
+                {stops.map((s, i) => (
+                    <StopCard
+                        key={i}
+                        icon={getIcon(s.type)}
+                        title={s.name}
+                        location={{ lat: s.lat, lng: s.lng }}
+                        duration={s.duration}
+                    />
+                ))}
             </div>
         </div>
     );
