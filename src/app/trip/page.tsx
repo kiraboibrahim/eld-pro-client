@@ -8,9 +8,9 @@ import LoadingSpinner from './components/LoadingSpinner';
 import ErrorState from './components/ErrorState';
 import TabNavigation, { TabType } from './components/TabNavigation';
 import TripSummaryCards from '@/components/TripSummaryCards';
-import StopsList from '@/components/StopsList';
+import StopsList, { StopWithType } from '@/components/StopsList';
 import ELDLogSheet from '@/components/ELDLogSheet';
-import { TripResponse, LogSheetData, TripFormData, Stop } from '@/types';
+import { TripResponse, LogSheetData, TripFormData } from '@/types';
 import { calculateTripRoute } from '@/libs/api';
 
 // Dynamically import map component (avoids SSR issues with Leaflet)
@@ -81,7 +81,7 @@ export default function ResultsPage() {
                     <ErrorState
                         title="Unable to Calculate Route"
                         message={error || 'An unexpected error occurred'}
-                        actionText="Back to Form"
+                        actionText="Create New Trip"
                         actionHref="/"
                         onRetry={calculateRoute}
                     />
@@ -93,7 +93,7 @@ export default function ResultsPage() {
     // Build a single Stop[] array from the API stops object
     const formattedStops = (() => {
         const s = tripData.stops;
-        const result: Stop[] = [];
+        const result: StopWithType[] = [];
 
         if (s.pickup) {
             result.push({ ...s.pickup, type: 'pickup' });

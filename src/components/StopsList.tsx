@@ -2,6 +2,10 @@ import React from 'react';
 import { MapPin, Fuel, Coffee, Moon } from 'lucide-react';
 import { Stop } from '@/types';
 
+export interface StopWithType extends Stop {
+    type: string;
+}
+
 interface StopCardProps {
     icon: React.ReactNode;
     title: string;
@@ -48,7 +52,7 @@ function getIcon(type: string) {
 }
 
 
-export default function StopsList({ stops = [] }: { stops?: Stop[] }) {
+export default function StopsList({ stops = [] }: { stops?: StopWithType[] }) {
     return (
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700 p-6">
             <h3 className="text-xl font-bold text-white mb-4">Trip Stops</h3>

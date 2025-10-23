@@ -16,7 +16,6 @@ export default function LocationAutocomplete({
 }: {
     onSelect: (place: Place) => void;
 }) {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/locations/autocomplete/`;
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<Place[]>([]);
     const [loading, setLoading] = useState(false);
@@ -54,6 +53,7 @@ export default function LocationAutocomplete({
                 const data = await getLocationAutoCompleteSuggestions(query, controllerRef.current.signal);
                 setResults(data || []);
                 setIsOpen(true);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (error: any) {
                 if (error.name !== 'AbortError') console.error('Autocomplete error:', error);
             } finally {

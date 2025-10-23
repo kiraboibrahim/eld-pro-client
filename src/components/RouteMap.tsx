@@ -60,6 +60,9 @@ export default function RouteMap({ tripData }: RouteMapProps) {
         ...tripData.stops.rest_stops.map(s => ({ ...s, type: 'rest' as const })),
         ...tripData.stops.break_stops.map(s => ({ ...s, type: 'break' as const }))
     ];
+    console.log(
+        allMapPoints
+    )
     return (
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700 overflow-hidden shadow-2xl">
             <div className="h-[600px]">

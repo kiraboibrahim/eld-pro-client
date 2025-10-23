@@ -38,7 +38,7 @@ export const DUMMY_ROUTE_DATA: TripResponse = {
             { lat: 32.8067, lng: -87.8967, name: 'Tuscaloosa, AL', time: '22:00', duration: 10, day: 1 }
         ],
         break_stops: [
-            { lat: 30.4515, lng: -91.1871, name: 'Baton Rouge, LA', time: '14:00', duration: 0.5, type: '30-min break' }
+            { lat: 30.4515, lng: -91.1871, name: 'Baton Rouge, LA', time: '14:00', duration: 0.5 }
         ]
     },
     timeline: {

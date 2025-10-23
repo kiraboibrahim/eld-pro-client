@@ -36,7 +36,6 @@ export interface Stop {
     distance?: number;
     time?: string;
     day?: number;
-    type: string;
 }
 
 export interface Stops {
