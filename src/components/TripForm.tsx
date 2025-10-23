@@ -23,10 +23,11 @@ export default function TripForm() {
         router.push('/trip');
     };
 
-    const handleInputChange = (field: keyof TripFormData, value: Place) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleInputChange = (field: keyof TripFormData, value: any) => {
         setFormData(prev => ({
             ...prev,
-            [field]: value.coordinates
+            [field]: value?.coordinates || value
         }));
     };
 
